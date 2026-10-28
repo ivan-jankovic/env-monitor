@@ -1,7 +1,10 @@
+from datetime import UTC, datetime
+
 from flask import Blueprint
 
 from .auth import require_token
 from .db import get_db
+from .timeutil import iso_utc
 
 bp = Blueprint("limits", __name__)
 
@@ -20,4 +23,9 @@ def load_limits(conn):
 @bp.get("/api/limits")
 @require_token
 def get_limits():
-    return {"limits": load_limits(get_db())}
+    # server_time lets the firmware set its clock when NTP is unreachable
+    # (LAN up, internet down); otherwise its readings would be rejected.
+    return {
+        "limits": load_limits(get_db()),
+        "server_time": iso_utc(datetime.now(UTC)),
+    }
