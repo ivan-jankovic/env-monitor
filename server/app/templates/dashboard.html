@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>env-monitor</title>
+  <link rel="icon" href="data:,"><!-- no favicon; avoids a 404 on every visit -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body data-refresh-seconds="{{ refresh_seconds }}">
+  <header>
+    <h1>env-monitor</h1>
+    <nav aria-label="Time range">
+      {% for h in ranges %}
+        <a href="?hours={{ h }}"{% if h == hours %} aria-current="page"{% endif %}>{{ h }} h</a>
+      {% endfor %}
+    </nav>
+  </header>
+
+  <p id="connection-lost" class="banner" hidden>
+    Connection to the server lost. Showing the last data received, retrying…
+  </p>
+
+  <main>
+    <div id="live">
+      <p class="updated">Updated <time datetime="{{ now | iso_utc }}">{{ now | iso_utc }}</time></p>
+
+      <section aria-labelledby="stations-heading">
+        <h2 id="stations-heading">Stations</h2>
+        {% for station in stations %}
+          <article class="station">
+            <h3>
+              <span class="status {{ 'online' if station.online else 'offline' }}">
+                {{ 'Online' if station.online else 'Offline' }}
+              </span>
+              {{ station.name }} <code>{{ station.id }}</code>
+            </h3>
+            <p class="last-seen">
+              Last seen:
+              {% if station.last_seen %}
+                <time datetime="{{ station.last_seen | iso_utc }}">{{ station.last_seen | iso_utc }}</time>
+              {% else %}
+                never
+              {% endif %}
+            </p>
+            <div class="cards">
+              {% for sensor, (label, unit) in sensors.items() %}
+                {% set reading = latest.get((station.id, sensor)) %}
+                {% set alarm = (station.id, sensor) in open_alarms %}
+                <div class="card{% if alarm %} alarm{% endif %}">
+                  <span class="label">{{ label }}{% if alarm %} · alarm{% endif %}</span>
+                  {% if reading %}
+                    <span class="value">{{ '%.1f' | format(reading[0]) }} {{ unit }}</span>
+                    <time datetime="{{ reading[1] | iso_utc }}">{{ reading[1] | iso_utc }}</time>
+                  {% else %}
+                    <span class="value none">No data</span>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </article>
+        {% else %}
+          <p>No stations configured.</p>
+        {% endfor %}
+      </section>
+
+      <section aria-labelledby="alarms-heading">
+        <h2 id="alarms-heading">Recent alarms</h2>
+        {% if recent_alarms %}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Station</th><th>Sensor</th><th>Value</th><th>Raised</th><th>Cleared</th></tr>
+              </thead>
+              <tbody>
+                {% for station_id, sensor, value, ts, cleared_at in recent_alarms %}
+                  <tr{% if not cleared_at %} class="open"{% endif %}>
+                    <td><code>{{ station_id }}</code></td>
+                    <td>{{ sensors[sensor][0] if sensor in sensors else sensor }}</td>
+                    <td>{{ '%.1f' | format(value) }} {{ sensors[sensor][1] if sensor in sensors else '' }}</td>
+                    <td><time datetime="{{ ts | iso_utc }}">{{ ts | iso_utc }}</time></td>
+                    <td>
+                      {% if cleared_at %}
+                        <time datetime="{{ cleared_at | iso_utc }}">{{ cleared_at | iso_utc }}</time>
+                      {% else %}
+                        <strong>open</strong>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p>No alarms yet.</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <section aria-labelledby="charts-heading">
+      <h2 id="charts-heading">Last {{ hours }} h</h2>
+      <div class="charts">
+        {% for sensor, (label, unit) in sensors.items() %}
+          <figure>
+            <figcaption>{{ label }} ({{ unit }})</figcaption>
+            <div class="chart-box"><canvas id="chart-{{ sensor }}" aria-label="{{ label }} chart"></canvas></div>
+          </figure>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  <script id="chart-data" type="application/json">{{ chart_data | tojson }}</script>
+  <script src="{{ url_for('static', filename='vendor/chart-4.5.1.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

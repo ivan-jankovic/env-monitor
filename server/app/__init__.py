@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from werkzeug.exceptions import HTTPException
 
-from . import db, limits, readings, stations
+from . import dashboard, db, limits, readings, stations
 
 
 def create_app(config=None):
@@ -25,6 +25,7 @@ def create_app(config=None):
     app.register_blueprint(readings.bp)
     app.register_blueprint(limits.bp)
     app.register_blueprint(stations.bp)
+    app.register_blueprint(dashboard.bp)
 
     @app.errorhandler(HTTPException)
     def http_error(e):
