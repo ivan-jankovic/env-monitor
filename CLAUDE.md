@@ -16,7 +16,7 @@ Persistent rules for this repository. Design and plan: see `README.md` and `docs
 ## Commands
 
 - Start everything: `docker compose up --build`
-- Server tests: `docker compose -f docker-compose.test.yml up -d --wait`, then `cd server && uv run pytest` (separate throwaway Postgres on port 5433, never the real database)
+- Server tests: `./scripts/test.sh` (starts a throwaway Postgres on port 5433, runs pytest, removes the container; pytest args are passed through)
 - Add a dependency: `cd server && uv add <pkg>` (dev: `uv add --dev <pkg>`)
 
 ## Conventions
