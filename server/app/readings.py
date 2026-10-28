@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 
 from flask import Blueprint, request
 
+from . import alarms
 from .auth import require_token
 from .db import get_db
 
@@ -99,11 +100,12 @@ def post_readings():
     if errors:
         return {"error": "invalid batch", "details": errors}, 400
 
-    # Oldest first: buffered batches arrive late, and alarm evaluation will depend on order.
+    # Oldest first: buffered batches arrive late, and alarm evaluation depends on order.
     readings.sort(key=lambda r: r[2])
 
     conn = get_db()
     with conn.transaction():
+        # Also locks the station row until commit, serializing batches per station.
         cur = conn.execute(
             "UPDATE stations SET last_seen = now() WHERE id = %s", (station_id,)
         )
@@ -113,9 +115,19 @@ def post_readings():
         with conn.cursor() as cur:
             cur.executemany(
                 "INSERT INTO readings (station_id, sensor, value, ts)"
-                " VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING",
+                " VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING"
+                " RETURNING sensor, value, ts",
                 [(station_id, *r) for r in readings],
+                returning=True,
             )
-            accepted = cur.rowcount
+            # One result set per reading, empty for a duplicate.
+            inserted = []
+            while True:
+                inserted.extend(cur.fetchall())
+                if not cur.nextset():
+                    break
 
-    return {"accepted": accepted, "duplicates": len(readings) - accepted}
+        # Only new readings: a resent old value must not re-raise a cleared alarm.
+        alarms.evaluate(conn, station_id, inserted)
+
+    return {"accepted": len(inserted), "duplicates": len(readings) - len(inserted)}
