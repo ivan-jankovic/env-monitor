@@ -3,7 +3,7 @@ name = "env-monitor-server"
 version = "0.1.0"
 description = "Flask API and dashboard for the env-monitor ESP32 station"
 authors = [
-    { name = "Ivan Jankovic", email = "ivan.jankovic@email.cz" }
+    { name = "Ivan Jankovic" }
 ]
 requires-python = ">=3.14"
 dependencies = [
