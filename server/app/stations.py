@@ -13,24 +13,30 @@ bp = Blueprint("stations", __name__)
 OFFLINE_AFTER_MISSED = 3
 
 
-@bp.get("/api/stations")
-@require_token
-def get_stations():
+def list_stations(conn):
+    """Return stations as dicts with id, name, last_seen (datetime or None) and online."""
     now = datetime.now(UTC)
     offline_after = timedelta(
         seconds=OFFLINE_AFTER_MISSED * current_app.config["READING_INTERVAL_SECONDS"]
     )
-    rows = get_db().execute(
-        "SELECT id, name, last_seen FROM stations ORDER BY id"
-    ).fetchall()
+    rows = conn.execute("SELECT id, name, last_seen FROM stations ORDER BY id").fetchall()
+    return [
+        {
+            "id": station_id,
+            "name": name,
+            "last_seen": last_seen,
+            "online": last_seen is not None and now - last_seen <= offline_after,
+        }
+        for station_id, name, last_seen in rows
+    ]
+
+
+@bp.get("/api/stations")
+@require_token
+def get_stations():
     return {
         "stations": [
-            {
-                "id": station_id,
-                "name": name,
-                "last_seen": iso_utc(last_seen) if last_seen else None,
-                "online": last_seen is not None and now - last_seen <= offline_after,
-            }
-            for station_id, name, last_seen in rows
+            {**s, "last_seen": iso_utc(s["last_seen"]) if s["last_seen"] else None}
+            for s in list_stations(get_db())
         ]
     }
