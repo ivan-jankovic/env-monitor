@@ -3,7 +3,7 @@ services:
     image: postgres:17
     environment:
       POSTGRES_USER: monitor
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
       POSTGRES_DB: monitor
     ports:
       - "127.0.0.1:5432:5432"   # local access only, e.g. for Postico
@@ -18,8 +18,8 @@ services:
   api:
     build: ./server
     environment:
-      DATABASE_URL: postgresql://monitor:${DB_PASSWORD:-changeme}@db:5432/monitor
-      API_TOKEN: ${API_TOKEN:-dev-token}
+      DATABASE_URL: postgresql://monitor:${DB_PASSWORD:?set DB_PASSWORD in .env}@db:5432/monitor
+      API_TOKEN: ${API_TOKEN:?set API_TOKEN in .env}
     ports:
       - "5001:5000"   # host 5000 is taken by macOS AirPlay Receiver
     depends_on:
