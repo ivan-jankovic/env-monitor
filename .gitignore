@@ -1,0 +1,20 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# PlatformIO build output
+.pio/
+
+# Editor (top level only; firmware/.gitignore handles firmware/.vscode)
+/.vscode/
+
+# macOS
+.DS_Store
+
+# Local bootstrap notes, not part of the repo
+docs/HANDOFF.md
