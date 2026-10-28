@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from werkzeug.exceptions import HTTPException
 
-from . import db, limits, readings
+from . import db, limits, readings, stations
 
 
 def create_app(config=None):
@@ -11,6 +11,10 @@ def create_app(config=None):
     app.config["DATABASE_URL"] = os.environ.get("DATABASE_URL")
     app.config["API_TOKEN"] = os.environ.get("API_TOKEN")
     app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024  # a full batch is well under 100 KB
+    # How often the firmware takes a reading; keep in sync with firmware/.
+    app.config["READING_INTERVAL_SECONDS"] = int(
+        os.environ.get("READING_INTERVAL_SECONDS", "10")
+    )
     if config:
         app.config.update(config)
     for key in ("DATABASE_URL", "API_TOKEN"):
@@ -20,6 +24,7 @@ def create_app(config=None):
     db.init_app(app)
     app.register_blueprint(readings.bp)
     app.register_blueprint(limits.bp)
+    app.register_blueprint(stations.bp)
 
     @app.errorhandler(HTTPException)
     def http_error(e):
