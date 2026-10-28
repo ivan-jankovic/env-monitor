@@ -17,5 +17,6 @@ RUN uv sync --locked --no-dev
 ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 5000
 
-# Flask's built-in server is fine for a LAN demo; use gunicorn in production.
-CMD ["flask", "--app", "app", "run", "--host", "0.0.0.0", "--port", "5000"]
+# Two sync workers are plenty for one station and a dashboard; each request
+# opens its own DB connection. Access log goes to stdout like Flask's did.
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--access-logfile", "-", "app:create_app()"]
