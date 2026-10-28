@@ -1,0 +1,20 @@
+# Throwaway Postgres for the server tests. Not a secret: it holds no real data,
+# listens on localhost only and keeps its data in memory.
+# Start: docker compose -f docker-compose.test.yml up -d --wait
+name: env-monitor-test   # separate project, so it never touches the main stack
+
+services:
+  db-test:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: monitor_test
+      POSTGRES_PASSWORD: monitor_test
+      POSTGRES_DB: monitor_test
+    ports:
+      - "127.0.0.1:5433:5432"   # 5432 is the real database
+    tmpfs:
+      - /var/lib/postgresql/data   # wiped on every restart
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monitor_test"]
+      interval: 2s
+      retries: 10
