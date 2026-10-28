@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: monitor
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_DB: monitor
+    ports:
+      - "127.0.0.1:5432:5432"   # local access only, e.g. for Postico
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./server/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monitor"]
+      interval: 5s
+      retries: 5
+
+  api:
+    build: ./server
+    environment:
+      DATABASE_URL: postgresql://monitor:${DB_PASSWORD:-changeme}@db:5432/monitor
+      API_TOKEN: ${API_TOKEN:-dev-token}
+    ports:
+      - "5001:5000"   # host 5000 is taken by macOS AirPlay Receiver
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
