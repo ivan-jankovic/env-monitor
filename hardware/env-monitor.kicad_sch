@@ -1525,14 +1525,14 @@
 	)
 	(text "Notes\n- Pin names as printed on the ESP32 DevKit V1. On the breadboard only the right-hand row\n  (3V3 ... D23) is reachable; the pins marked with an X are not connected.\n- The DHT22 module has the pull-up resistor for DATA on board.\n- LED resistors are on the cathode side, as built: about 5-6 mA per LED at 3.3 V.\n- The button uses the ESP32's internal pull-up; pressed reads LOW.\n- Power from USB only. Never connect VIN (5 V) to anything else on the board."
 		(exclude_from_sim no)
-		(at 25.4 137.16 0)
+		(at 85.09 137.16 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left top)
 		)
-		(uuid "80b2ece6-4a2b-5ca0-b334-a4779dfb5af9")
+		(uuid "ba4bacbd-dded-5bc8-ad70-7dabfdb81353")
 	)
 	(no_connect
 		(at 116.84 91.44)
