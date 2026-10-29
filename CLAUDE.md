@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Persistent rules for this repository. Design and plan: see `README.md` and `docs/`. While the project is being bootstrapped, a local, untracked `docs/HANDOFF.md` may also exist. Read it if present.
+Persistent rules for this repository. Overview, setup and wiring: see `README.md`. API, schema, alarm rule and firmware design: see `docs/design.md`.
 
 ## What this project is
 
