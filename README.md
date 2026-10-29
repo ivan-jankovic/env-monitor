@@ -157,3 +157,7 @@ This is a single-station demo on a home network. In particular:
 - **API and devices:** TLS, per-device tokens stored as hashes instead of one shared token, authentication for the dashboard, and rate limiting.
 - **Firmware:** OTA updates, flash-backed buffering, flash encryption (the WiFi password and token are currently readable from the flash), and reporting of sensor faults to the server.
 - **Operations:** monitoring and alerting for stations that stop reporting, structured logging, and alarm notifications (for example a Telegram bot).
+
+## License
+
+MIT, see [LICENSE](LICENSE). The vendored Chart.js is also MIT-licensed; its license is in [server/app/static/vendor/](server/app/static/vendor/chart.js-LICENSE.md).
