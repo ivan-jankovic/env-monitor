@@ -8,7 +8,7 @@ Persistent rules for this repository. Overview, setup and wiring: see `README.md
 
 ## Stack
 
-- Server: Python 3.14, Flask, `psycopg` (v3) with plain parameterized SQL, pytest. Managed with **uv** (`pyproject.toml` + `uv.lock`, no requirements.txt).
+- Server: Python 3.14, Flask, `psycopg` (v3) with plain parameterized SQL, pytest; served by gunicorn in Docker. Managed with **uv** (`pyproject.toml` + `uv.lock`, no requirements.txt).
 - Database: PostgreSQL 17 via Docker Compose, schema in `server/db/init.sql`.
 - Firmware: C++ (Arduino framework) on a classic ESP32 DevKit V1 (ESP32-WROOM-32), built with PlatformIO in `firmware/`.
 - Dashboard: server-rendered Flask page with Chart.js.

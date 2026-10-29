@@ -52,7 +52,7 @@ Requirements: VS Code with the PlatformIO extension. Open `firmware/` as the Pla
    - the WiFi name and password (the ESP32 supports **2.4 GHz only**),
    - `API_BASE_URL`: the computer's LAN IP with port 5001, e.g. `http://192.168.1.50:5001`,
    - `API_TOKEN`: the same value as in `.env`.
-2. Upload and open the serial monitor: `pio run -t upload -t monitor`. Close any open serial monitor first, or the upload fails. The boot line shows when the running firmware was built.
+2. Upload and open the serial monitor: **Upload and Monitor** in the PlatformIO sidebar, or `pio run -t upload -t monitor` in `firmware/`. The VS Code extension does not put `pio` on the PATH; its CLI is `~/.platformio/penv/bin/pio`. Close any open serial monitor first, or the upload fails. The boot line shows when the running firmware was built.
 3. If the macOS firewall is on, allow incoming connections for Docker (System Settings, Network, Firewall, Options). To check, open the dashboard from a phone on the same network.
 
 ## Hardware

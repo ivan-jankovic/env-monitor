@@ -51,7 +51,7 @@ Validation:
 ```json
 {
   "limits": {
-    "humidity": {"min_val": 10.0, "max_val": 60.0, "hysteresis": 2.0},
+    "humidity": {"min_val": 10.0, "max_val": 50.0, "hysteresis": 2.0},
     "temperature": {"min_val": 15.0, "max_val": 30.0, "hysteresis": 1.0}
   },
   "server_time": "2026-10-29T11:05:18Z"
@@ -77,7 +77,7 @@ A station is offline after 3 missed readings: no request for 3 × `READING_INTER
 
 Open and read-only, so it never contains the API token. `?hours=1`, `6` or `24` selects the chart range; any other value returns 400. Longer ranges are averaged into time buckets of at least the reading interval, so each line has at most 720 points. Averaging can make short spikes look smaller on the 24 h chart, but they still appear in the alarm list. A gap of more than 3 buckets breaks the line instead of drawing across it. The page shows the last 10 alarms.
 
-The handoff also planned `GET /api/readings` for the charts. The dashboard renders its data on the server, so that endpoint was not built.
+An earlier plan also included `GET /api/readings` for the charts. The dashboard renders its data on the server, so that endpoint was not built.
 
 ## Database
 
@@ -99,7 +99,7 @@ Each sensor has `min_val`, `max_val` and `hysteresis`:
 - **Raise** when a value is strictly above `max_val` or below `min_val`, and no alarm is open for that station and sensor.
 - **Clear** only when the value is back inside both limits by at least the hysteresis: at or below `max_val − hysteresis` and at or above `min_val + hysteresis`. Inside that band an open alarm stays open, so a value hovering at the limit does not flip the alarm on and off.
 
-Example, humidity with `max_val` 60 and `hysteresis` 2: 60.4 raises, 59 keeps the alarm open, 58 clears it.
+Example, humidity with the seeded `max_val` 50 and `hysteresis` 2: 50.4 raises, 49 keeps the alarm open, 48 clears it.
 
 The server evaluates only newly inserted readings, oldest first, so a resent duplicate cannot re-raise a cleared alarm. An alarm is cleared at the time of the reading that cleared it, and only by a reading newer than the alarm.
 
