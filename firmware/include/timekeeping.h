@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <time.h>
 
 namespace timekeeping {
 
@@ -15,8 +16,13 @@ bool valid();
 Source source();
 const char* sourceName();
 
-// Current UTC time as "2026-10-28T14:03:10Z". Returns false while the clock is
-// not set. buf needs at least 21 bytes.
+// Current UTC time. Returns false while the clock is not set.
+bool now(time_t& out);
+
+// Format as "2026-10-28T14:03:10Z". buf needs at least 21 bytes.
+void formatIso(time_t t, char* buf, size_t len);
+
+// formatIso(now). Returns false while the clock is not set.
 bool isoNow(char* buf, size_t len);
 
 }  // namespace timekeeping

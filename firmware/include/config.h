@@ -10,6 +10,8 @@
 constexpr uint32_t READING_INTERVAL_MS = 10000;
 
 constexpr uint8_t DHT_PIN = 4;
+// Consecutive skipped samples before the sensor counts as faulty.
+constexpr uint32_t SENSOR_FAULT_AFTER = 3;
 
 // How long one WiFi connection attempt may take before the next one starts.
 constexpr uint32_t WIFI_ATTEMPT_MS = 15000;

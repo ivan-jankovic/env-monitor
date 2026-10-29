@@ -89,14 +89,26 @@ const char* sourceName() {
   }
 }
 
-bool isoNow(char* buf, size_t len) {
+bool now(time_t& out) {
   if (!valid()) {
     return false;
   }
-  const time_t now = time(nullptr);
+  out = time(nullptr);
+  return true;
+}
+
+void formatIso(time_t t, char* buf, size_t len) {
   struct tm utc;
-  gmtime_r(&now, &utc);
+  gmtime_r(&t, &utc);
   strftime(buf, len, "%Y-%m-%dT%H:%M:%SZ", &utc);
+}
+
+bool isoNow(char* buf, size_t len) {
+  time_t t;
+  if (!now(t)) {
+    return false;
+  }
+  formatIso(t, buf, len);
   return true;
 }
 
