@@ -64,6 +64,21 @@ void logFailure(const char* what, int status, const String& body = String()) {
   Serial.printf("[api] %s failed: HTTP %d%s %.300s\n", what, status, hint, body.c_str());
 }
 
+// {"min_val": 10, "max_val": 60, "hysteresis": 2}; min_val and max_val may be null.
+bool parseLimit(JsonVariantConst json, Limit& out) {
+  JsonVariantConst minVal = json["min_val"], maxVal = json["max_val"], h = json["hysteresis"];
+  if (!json.is<JsonObjectConst>() || (!minVal.isNull() && !minVal.is<double>()) ||
+      (!maxVal.isNull() && !maxVal.is<double>()) || !h.is<double>()) {
+    return false;
+  }
+  out.hasMin = !minVal.isNull();
+  out.minVal = minVal | 0.0;
+  out.hasMax = !maxVal.isNull();
+  out.maxVal = maxVal | 0.0;
+  out.hysteresis = h.as<double>();
+  return true;
+}
+
 }  // namespace
 
 PostResult postReadings(const Reading* readings, size_t count) {
@@ -102,6 +117,22 @@ PostResult postReadings(const Reading* readings, size_t count) {
     result.duplicates = reply["duplicates"] | 0;
   }
   return result;
+}
+
+bool fetchLimits(LimitsResponse& out) {
+  JsonDocument doc;
+  const int status = getJson("/api/limits", doc);
+  if (status != HTTP_CODE_OK) {
+    logFailure("GET /api/limits", status);
+    return false;
+  }
+  JsonVariantConst all = doc["limits"];
+  if (!parseLimit(all["temperature"], out.temperature) ||
+      !parseLimit(all["humidity"], out.humidity)) {
+    Serial.println("[api] GET /api/limits: missing or invalid limits for temperature or humidity");
+    return false;
+  }
+  return true;
 }
 
 bool fetchServerTime(time_t& out) {

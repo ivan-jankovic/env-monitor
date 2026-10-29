@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <math.h>
 
+#include "alarm_limits.h"
+#include "alarms.h"
 #include "api.h"
 #include "config.h"
 #include "env_sensor.h"
@@ -18,6 +20,10 @@ void takeAndSendReading() {
   if (!sensor.read(m)) {
     return;  // logged by the sensor
   }
+  const double temperature = round1(m.temperature);
+  const double humidity = round1(m.humidity);
+  alarms::evaluate(temperature, humidity);  // works offline, unlike the server's alarms
+
   time_t now;
   if (!timekeeping::now(now)) {
     Serial.printf("[reading] temperature=%.1f C  humidity=%.1f %%  not sent: clock not set\n",
@@ -32,8 +38,8 @@ void takeAndSendReading() {
     return;
   }
   const api::Reading batch[] = {
-      {"temperature", round1(m.temperature), now},
-      {"humidity", round1(m.humidity), now},
+      {"temperature", temperature, now},
+      {"humidity", humidity, now},
   };
   const api::PostResult result = api::postReadings(batch, 2);
   if (result.status == 200) {
@@ -44,7 +50,8 @@ void takeAndSendReading() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("\nenv-monitor " STATION_ID " starting");
+  // The build time shows which firmware is actually running after an upload.
+  Serial.println("\nenv-monitor " STATION_ID " starting, built " __DATE__ " " __TIME__);
   sensor.begin();
   timekeeping::begin();
   wifi_link::begin();
@@ -53,6 +60,7 @@ void setup() {
 void loop() {
   wifi_link::loop();
   timekeeping::loop();
+  limits::loop();
 
   if (millis() - lastReadingAt >= READING_INTERVAL_MS) {
     lastReadingAt = millis();

@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <time.h>
 
+#include "alarm_limits.h"
+
 namespace api {
 
 struct Reading {
@@ -20,6 +22,14 @@ struct PostResult {
 
 // POST one batch to /api/readings. Failures are logged here.
 PostResult postReadings(const Reading* readings, size_t count);
+
+struct LimitsResponse {
+  Limit temperature;
+  Limit humidity;
+};
+
+// GET /api/limits. Fails (and logs why) unless both sensors have valid limits.
+bool fetchLimits(LimitsResponse& out);
 
 // GET /api/limits and return its server_time (UTC). Used as the clock
 // fallback when NTP is unreachable but the server is.

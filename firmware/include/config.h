@@ -30,4 +30,8 @@ constexpr uint32_t NTP_WAIT_MS = 15000;
 constexpr uint32_t SERVER_TIME_RETRY_MS = 30000;      // after a failed fallback request
 constexpr uint32_t SERVER_TIME_REFRESH_MS = 3600000;  // re-sync while NTP stays unreachable
 
+// Alarm limits: re-fetched this often, so database changes apply within a minute.
+constexpr uint32_t LIMITS_REFRESH_MS = 60000;
+constexpr uint32_t LIMITS_RETRY_MS = 30000;  // until the first fetch succeeds
+
 constexpr uint16_t HTTP_TIMEOUT_MS = 5000;
