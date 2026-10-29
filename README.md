@@ -81,7 +81,9 @@ On the breadboard the ESP32 covers all but one hole column, so only the pin row 
 
 The DHT22 module's middle pin is VCC, so a cable plugged in the wrong way round swaps power and ground. Check the orientation before powering it.
 
-A wiring photo and a KiCad schematic are still to come.
+![The breadboard: DHT22 module on the left, the green, yellow and red LEDs with their resistors in the middle, the button, and the ESP32 on the right with the USB cable](docs/images/breadboard.jpg)
+
+The 3V3 and GND pins (right end) feed the upper power rails, which the DHT22 (left end), the LED resistors and the button use. A KiCad schematic is still to come.
 
 ### LEDs and button
 
