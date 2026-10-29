@@ -83,7 +83,11 @@ The DHT22 module's middle pin is VCC, so a cable plugged in the wrong way round 
 
 ![The breadboard: DHT22 module on the left, the green, yellow and red LEDs with their resistors in the middle, the button, and the ESP32 on the right with the USB cable](docs/images/breadboard.jpg)
 
-The 3V3 and GND pins (right end) feed the upper power rails, which the DHT22 (left end), the LED resistors and the button use. A KiCad schematic is still to come.
+The 3V3 and GND pins (right end) feed the upper power rails, which the DHT22 (left end), the LED resistors and the button use.
+
+The same circuit as a schematic. The KiCad project is in [hardware/](hardware/); open `env-monitor.kicad_pro` in KiCad 10 or later.
+
+![Schematic: ESP32 DevKit V1 with the DHT22 module on D4, the green, yellow and red LEDs on D16, D17 and D18 through 220 Ω resistors to GND, and the check button from D23 to GND](docs/images/schematic.svg)
 
 ### LEDs and button
 

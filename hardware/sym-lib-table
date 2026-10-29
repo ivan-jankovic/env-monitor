@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "env-monitor") (type "KiCad") (uri "${KIPRJMOD}/env-monitor.kicad_sym") (options "") (descr "ESP32 DevKit V1 and DHT22 module, as wired in this project"))
+)
