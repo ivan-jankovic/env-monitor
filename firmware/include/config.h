@@ -14,7 +14,7 @@ constexpr uint8_t DHT_PIN = 4;
 // Consecutive skipped samples before the sensor counts as faulty.
 constexpr uint32_t SENSOR_FAULT_AFTER = 3;
 
-// Each LED goes GPIO -> 220 Ohm -> LED anode, cathode -> GND.
+// Each LED goes GPIO -> LED anode, cathode -> 220 Ohm -> GND.
 constexpr uint8_t LED_GREEN_PIN = 16;
 constexpr uint8_t LED_YELLOW_PIN = 17;
 constexpr uint8_t LED_RED_PIN = 18;
