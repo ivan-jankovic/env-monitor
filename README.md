@@ -6,6 +6,10 @@ An ESP32 with a DHT22 sensor measures temperature and humidity every 10 seconds 
 
 The scope is deliberately small: one sensor station, two measurements, one dashboard. The effort went into reliability (offline buffering, retries, idempotent writes, alarms with hysteresis) and into keeping each part simple enough to read in one sitting.
 
+![The dashboard over 6 hours: the station is online, temperature is steady at 21 °C, and humidity shows a cleared alarm after a spike to 57 % and an open alarm at 51.8 %, with the limits drawn as dashed lines](docs/images/dashboard.png)
+
+*The dashboard with synthetic data: a humidity spike that raised an alarm and cleared once the value was back below 48 %, and a second rise that is still in alarm.*
+
 ## Architecture
 
 ```
@@ -129,7 +133,7 @@ firmware/
 hardware/                 KiCad schematic and the project's symbols
 docs/
   design.md               API, database, alarm rule, firmware design, failure handling
-  images/                 breadboard photo and schematic
+  images/                 breadboard photo, schematic, dashboard screenshot
 ```
 
 This lists the main folders and the files you are most likely to look for, not every file.
