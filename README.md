@@ -1,5 +1,7 @@
 # env-monitor
 
+[![CI](https://github.com/ivan-jankovic/env-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/ivan-jankovic/env-monitor/actions/workflows/ci.yml)
+
 An ESP32 with a DHT22 sensor measures temperature and humidity every 10 seconds and sends the readings over WiFi to a small Flask API. The API stores them in PostgreSQL, raises alarms when values leave their limits, and serves a live dashboard.
 
 **Scenario:** a filament storage room needs temperature and humidity monitored continuously, with an alert when readings drift out of range, and with no data lost during network outages.
@@ -113,6 +115,8 @@ The button triggers an immediate check: one reading, compared with the limits, l
 
 The script starts a throwaway PostgreSQL on port 5433 (separate from the real database and from `.env`), runs the pytest suite, and removes the container afterwards. pytest arguments are passed through, e.g. `./scripts/test.sh -k alarms`.
 
+GitHub Actions runs the same tests against PostgreSQL 17 on every push and pull request, and builds the firmware with the placeholder values from `secrets.h.example` ([.github/workflows/ci.yml](.github/workflows/ci.yml)).
+
 The firmware has no automated tests. Each stage was tested on the board, including WiFi loss, server loss, a missing NTP server and an unplugged sensor. The scenarios are listed in [docs/design.md](docs/design.md#failure-handling).
 
 ## Repository layout
@@ -122,6 +126,7 @@ docker-compose.yml        API and database
 docker-compose.test.yml   throwaway database for the tests
 .env.example              template for the secrets in .env (gitignored)
 scripts/test.sh           runs the server tests
+.github/workflows/ci.yml  CI: server tests and firmware build
 server/
   app/                    Flask app: readings, limits, stations, alarms, dashboard
   db/init.sql             schema and seed data
