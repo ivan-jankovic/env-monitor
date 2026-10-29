@@ -1,6 +1,7 @@
 // Non-secret settings. Credentials live in secrets.h (see secrets.h.example).
 #pragma once
 
+#include <stddef.h>
 #include <stdint.h>
 
 #define STATION_ID "esp32-01"
@@ -35,3 +36,11 @@ constexpr uint32_t LIMITS_REFRESH_MS = 60000;
 constexpr uint32_t LIMITS_RETRY_MS = 30000;  // until the first fetch succeeds
 
 constexpr uint16_t HTTP_TIMEOUT_MS = 5000;
+
+// Offline buffer: 12 h of samples at the 10 s interval, 8 bytes each (~35 KB).
+constexpr size_t BUFFER_CAPACITY = 12 * 3600 / (READING_INTERVAL_MS / 1000);
+// Samples per POST (2 readings each); the server accepts up to 1000 readings.
+constexpr size_t MAX_BATCH_SAMPLES = 50;
+// After a failed send, wait 5 s, then 10, 20, ... up to 2 min.
+constexpr uint32_t SEND_BACKOFF_MIN_MS = 5000;
+constexpr uint32_t SEND_BACKOFF_MAX_MS = 120000;

@@ -3,10 +3,10 @@
 
 #include "alarm_limits.h"
 #include "alarms.h"
-#include "api.h"
 #include "config.h"
 #include "env_sensor.h"
 #include "timekeeping.h"
+#include "uplink.h"
 #include "wifi_link.h"
 
 EnvSensor sensor;
@@ -15,7 +15,7 @@ uint32_t lastReadingAt = 0;
 // The DHT22 resolves 0.1; rounding also keeps float noise like 24.700001 out of the JSON.
 double round1(float value) { return round(value * 10.0) / 10.0; }
 
-void takeAndSendReading() {
+void takeReading() {
   Measurement m;
   if (!sensor.read(m)) {
     return;  // logged by the sensor
@@ -26,26 +26,15 @@ void takeAndSendReading() {
 
   time_t now;
   if (!timekeeping::now(now)) {
-    Serial.printf("[reading] temperature=%.1f C  humidity=%.1f %%  not sent: clock not set\n",
+    // The server rejects timestamps before 2020, so this can't be buffered either.
+    Serial.printf("[reading] temperature=%.1f C  humidity=%.1f %%  skipped: clock not set\n",
                   m.temperature, m.humidity);
     return;
   }
   char ts[21];
   timekeeping::formatIso(now, ts, sizeof ts);
   Serial.printf("[%s] temperature=%.1f C  humidity=%.1f %%\n", ts, m.temperature, m.humidity);
-  if (!wifi_link::connected()) {
-    Serial.println("[reading] not sent: WiFi down");
-    return;
-  }
-  const api::Reading batch[] = {
-      {"temperature", temperature, now},
-      {"humidity", humidity, now},
-  };
-  const api::PostResult result = api::postReadings(batch, 2);
-  if (result.status == 200) {
-    Serial.printf("[api] POST /api/readings: accepted=%d duplicates=%d\n", result.accepted,
-                  result.duplicates);
-  }
+  uplink::add(now, temperature, humidity);
 }
 
 void setup() {
@@ -64,7 +53,8 @@ void loop() {
 
   if (millis() - lastReadingAt >= READING_INTERVAL_MS) {
     lastReadingAt = millis();
-    takeAndSendReading();
+    takeReading();
   }
+  uplink::loop();
   delay(10);
 }
