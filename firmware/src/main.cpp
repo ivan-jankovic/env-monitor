@@ -1,44 +1,39 @@
 #include <Arduino.h>
 #include <DHT.h>
 
-const int DHT_PIN = 4;
+#include "config.h"
+#include "timekeeping.h"
+#include "wifi_link.h"
+
 DHT dht(DHT_PIN, DHT22);
+uint32_t lastReadingAt = 0;
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("\nenv-monitor " STATION_ID " starting");
   dht.begin();
+  timekeeping::begin();
+  wifi_link::begin();
 }
 
 void loop() {
-  delay(5000);                       // the DHT22 needs at least 2 s between reads
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
-  if (isnan(h) || isnan(t)) {
-    Serial.println("read failed");
-    return;
+  wifi_link::loop();
+  timekeeping::loop();
+
+  if (millis() - lastReadingAt >= READING_INTERVAL_MS) {
+    lastReadingAt = millis();
+    char ts[21];
+    if (!timekeeping::isoNow(ts, sizeof ts)) {
+      strcpy(ts, "time not set");
+    }
+    const float h = dht.readHumidity();
+    const float t = dht.readTemperature();
+    if (isnan(h) || isnan(t)) {
+      Serial.printf("[%s] read failed\n", ts);
+    } else {
+      Serial.printf("[%s] temperature=%.1f C  humidity=%.1f %%  (clock: %s)\n",
+                    ts, t, h, timekeeping::sourceName());
+    }
   }
-  Serial.printf("temperature=%.1f C  humidity=%.1f %%\n", t, h);
+  delay(10);
 }
-
-/*
-#include <Arduino.h>
-
-const int LED_PIN = 2;  // onboard LED on most DevKit V1 boards
-
-void setup() {
-  Serial.begin(115200);
-  pinMode(LED_PIN, OUTPUT);
-  Serial.println("ESP32 alive");
-  digitalWrite(LED_PIN, LOW);   // LED off, and it stays off
-}
-
-void loop() {
-  // digitalWrite(LED_PIN, HIGH);
-  // Serial.println("LED on");
-  // delay(1000);
-  // digitalWrite(LED_PIN, LOW);
-  // Serial.println("LED off");
-  // delay(1000);
-}
-
-*/
