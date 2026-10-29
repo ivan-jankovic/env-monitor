@@ -10,6 +10,13 @@ __pycache__/
 # PlatformIO build output
 .pio/
 
+# KiCad: per-user view settings, backups, caches and lock files
+*.kicad_prl
+*-backups/
+fp-info-cache
+\#auto_saved_files\#
+~*.lck
+
 # Editor (top level only; firmware/.gitignore handles firmware/.vscode)
 /.vscode/
 
