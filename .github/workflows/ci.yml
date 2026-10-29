@@ -1,0 +1,54 @@
+# Server tests against a throwaway Postgres, and a firmware build check.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  server-tests:
+    runs-on: ubuntu-latest
+    services:
+      # Same database as docker-compose.test.yml, so conftest.py's default URL works.
+      db-test:
+        image: postgres:17
+        env:
+          POSTGRES_USER: monitor_test
+          POSTGRES_PASSWORD: monitor_test
+          POSTGRES_DB: monitor_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U monitor_test"
+          --health-interval 2s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: server/uv.lock
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  firmware-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - run: uv tool install platformio==6.2.0
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: platformio-${{ hashFiles('firmware/platformio.ini') }}
+      # The build only needs the values to be defined; placeholders are enough.
+      - run: cp firmware/include/secrets.h.example firmware/include/secrets.h
+      - run: pio run -d firmware
