@@ -14,6 +14,15 @@ constexpr uint8_t DHT_PIN = 4;
 // Consecutive skipped samples before the sensor counts as faulty.
 constexpr uint32_t SENSOR_FAULT_AFTER = 3;
 
+// Each LED goes GPIO -> 220 Ohm -> LED anode, cathode -> GND.
+constexpr uint8_t LED_GREEN_PIN = 16;
+constexpr uint8_t LED_YELLOW_PIN = 17;
+constexpr uint8_t LED_RED_PIN = 18;
+// Button between GPIO 23 and GND (internal pull-up, so pressed reads LOW).
+// GPIO 23 is the last pin on the reachable row, where there is room to wire.
+constexpr uint8_t BUTTON_PIN = 23;
+constexpr uint32_t BUTTON_DEBOUNCE_MS = 30;
+
 // How long one WiFi connection attempt may take before the next one starts.
 constexpr uint32_t WIFI_ATTEMPT_MS = 15000;
 

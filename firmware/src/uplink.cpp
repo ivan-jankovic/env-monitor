@@ -15,6 +15,7 @@ namespace {
 SampleBuffer<BUFFER_CAPACITY> buffer;
 Backoff backoff(SEND_BACKOFF_MIN_MS, SEND_BACKOFF_MAX_MS);
 bool waiting = false;  // in a backoff pause after a failed send
+bool lastSendOk = false;
 uint32_t retryAt = 0;
 bool wasConnected = false;
 
@@ -36,6 +37,7 @@ void sendBatch() {
     readings[2 * i + 1] = {"humidity", batch[i].humidity10 / 10.0, batch[i].ts};
   }
   const api::PostResult result = api::postReadings(readings, 2 * n);
+  lastSendOk = result.status == 200;
 
   if (result.status == 200) {
     buffer.pop(n);
@@ -92,5 +94,7 @@ void loop() {
 }
 
 size_t pending() { return buffer.size(); }
+
+bool healthy() { return wifi_link::connected() && lastSendOk && !waiting; }
 
 }  // namespace uplink

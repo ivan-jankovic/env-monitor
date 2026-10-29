@@ -24,9 +24,12 @@ void EnvSensor::begin() { dht.begin(); }
 
 bool EnvSensor::read(Measurement& out) {
   for (int attempt = 1; attempt <= READ_ATTEMPTS; attempt++) {
-    if (attempt > 1) {
-      delay(DHT_MIN_GAP_MS);
+    const uint32_t sinceLast = millis() - lastReadAt_;
+    if (hasRead_ && sinceLast < DHT_MIN_GAP_MS) {
+      delay(DHT_MIN_GAP_MS - sinceLast);
     }
+    hasRead_ = true;
+    lastReadAt_ = millis();
     const float t = dht.readTemperature(false, true);  // force a fresh read
     const float h = dht.readHumidity();                // same read, cached by the library
     if (plausible(t, h)) {

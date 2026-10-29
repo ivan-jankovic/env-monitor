@@ -14,8 +14,10 @@ class EnvSensor {
  public:
   void begin();
 
-  // Take one measurement, retrying a failed read. Blocks for up to about 4 s
-  // while retrying, because the DHT22 needs 2 s between reads.
+  // Take one measurement, retrying a failed read. The DHT22 needs 2 s between
+  // reads, so this waits if the previous read was more recent (e.g. a button
+  // press right after a scheduled reading) and blocks for up to about 4 s
+  // while retrying.
   bool read(Measurement& out);
 
   uint32_t consecutiveFailures() const { return failures_; }
@@ -23,4 +25,6 @@ class EnvSensor {
 
  private:
   uint32_t failures_ = 0;
+  bool hasRead_ = false;
+  uint32_t lastReadAt_ = 0;
 };

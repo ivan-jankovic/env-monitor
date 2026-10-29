@@ -37,7 +37,7 @@ Persistent rules for this repository. Design and plan: see `README.md` and `docs
 - Power comes from USB only. The 9 V battery is deliberately not used.
 - Use ADC1 pins (GPIO 32-39) for analog input, since ADC2 does not work while WiFi is active.
 - Avoid GPIO 0, 2, 12, 15 for LEDs and buttons (boot-related).
-- On the breadboard only one ESP32 pin row is reachable, the one with 3V3 (USB end first: 3V3, GND, D15, D2, D4, D16, D17, D5, D18, D19, D21, RX0, TX0, D22, D23). Use only these pins: 3V3, GND, D4 (DHT22), D16/D17/D18 (LEDs), D19 (button). Keep D21 and D22 free for a possible future I2C sensor.
+- On the breadboard only one ESP32 pin row is reachable, the one with 3V3 (USB end first: 3V3, GND, D15, D2, D4, D16, D17, D5, D18, D19, D21, RX0, TX0, D22, D23). Use only these pins: 3V3, GND, D4 (DHT22), D16/D17/D18 (LEDs), D23 (button, at the far end of the row where there is room to wire). Keep D21 and D22 free for a possible future I2C sensor.
 - The ESP32 supports 2.4 GHz WiFi only.
 - No soldering anywhere in this project.
 

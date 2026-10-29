@@ -12,4 +12,8 @@ void add(time_t ts, double temperature, double humidity);
 void loop();  // call on every loop() iteration
 size_t pending();
 
+// Delivering normally: WiFi up, the last send succeeded and no retry is
+// pending. False from boot until the first successful send.
+bool healthy();
+
 }  // namespace uplink

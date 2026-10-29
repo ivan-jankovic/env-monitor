@@ -9,4 +9,7 @@ namespace alarms {
 void evaluate(double temperature, double humidity);
 bool anyOpen();
 
+// "none", "temperature", "humidity" or "temperature, humidity".
+const char* describeOpen();
+
 }  // namespace alarms

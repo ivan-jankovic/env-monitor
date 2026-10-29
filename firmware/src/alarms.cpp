@@ -49,4 +49,14 @@ void evaluate(double temperature, double humidity) {
 
 bool anyOpen() { return temperatureAlarm.open || humidityAlarm.open; }
 
+const char* describeOpen() {
+  if (temperatureAlarm.open && humidityAlarm.open) {
+    return "temperature, humidity";
+  }
+  if (temperatureAlarm.open) {
+    return "temperature";
+  }
+  return humidityAlarm.open ? "humidity" : "none";
+}
+
 }  // namespace alarms
