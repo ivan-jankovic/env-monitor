@@ -116,6 +116,7 @@ The firmware has no automated tests. Each stage was tested on the board, includi
 ```
 docker-compose.yml        API and database
 docker-compose.test.yml   throwaway database for the tests
+.env.example              template for the secrets in .env (gitignored)
 scripts/test.sh           runs the server tests
 server/
   app/                    Flask app: readings, limits, stations, alarms, dashboard
@@ -125,7 +126,13 @@ firmware/
   include/config.h        pins, intervals, buffer size, timeouts
   include/secrets.h       WiFi, server URL, token (gitignored; see secrets.h.example)
   src/                    one module per concern (see docs/design.md)
+hardware/                 KiCad schematic and the project's symbols
+docs/
+  design.md               API, database, alarm rule, firmware design, failure handling
+  images/                 breadboard photo and schematic
 ```
+
+This lists the main folders and the files you are most likely to look for, not every file.
 
 ## Design decisions
 
