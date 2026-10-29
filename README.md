@@ -79,7 +79,7 @@ Power comes from USB only. The ESP32 runs at 3.3 V: never connect 5 V or more to
 
 On the breadboard the ESP32 covers all but one hole column, so only the pin row with 3V3 is reachable: 3V3, GND, D15, D2, D4, D16, D17, D5, D18, D19, D21, RX0, TX0, D22, D23 (USB end first). The pins above avoid the boot-related D15, D2 and D5 and the serial pins RX0/TX0. D21 and D22 stay free as the default I2C pins, in case the DHT22 is replaced by an I2C sensor.
 
-The DHT22 module's middle pin is VCC, so a cable plugged in the wrong way round swaps power and ground. Check the orientation before powering it.
+The DHT22 module's middle pin is VCC, so a cable plugged in the wrong way round swaps power and ground. Check the orientation before powering it. Keep the DHT22 a few centimetres away from the ESP32, so the board's heat does not skew the readings.
 
 ![The breadboard: DHT22 module on the left, the green, yellow and red LEDs with their resistors in the middle, the button, and the ESP32 on the right with the USB cable](docs/images/breadboard.jpg)
 
